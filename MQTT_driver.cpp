@@ -2,10 +2,10 @@
 #include "MQTT_driver.h "  
 
 
-WiFiClient tcpClient;
-PubSubClient mqttClient;
 
-void setup_wifi(){
+/* WIFI初始化函数 */
+void wifi_setup(){
+  if(DEBUG_MODE) Serial.printf("\nConnecting to %s", wifi_ssid);
   WiFi.begin(wifi_ssid, wifi_password);
   while (WiFi.status() != WL_CONNECTED){
     delay(500);
@@ -18,21 +18,38 @@ void setup_wifi(){
   }
 }
 
-void setup_MQTT(){
+/* MQTT初始化函数 */
+void mqtt_setup(){
   // 设置MQTT客户端
   mqttClient.setClient(tcpClient);
   mqttClient.setServer(mqtt_broker_addr, mqtt_broker_port);
   //mqttClient.setBufferSize(mqtt_client_buff_size);
   mqttClient.setCallback(mqtt_callback);
   mqtt_client_id += String(WiFi.macAddress()); // 每个客户端需要有唯一的ID，不然上线时会把其他相同ID的客户端踢下线
+  if(DEBUG_MODE)Serial.println("[DEBUG]MQTT正在连接...");
   if (mqttClient.connect(mqtt_client_id.c_str(), mqtt_username, mqtt_password))
   {
     mqttClient.publish("esp32/state", "online"); // 连接成功后发布状态
     if(DEBUG_MODE)Serial.println("[DEBUG]MQTT连接成功！");
   }
-  if(DEBUG_MODE)Serial.println("[DEBUG]MQTT正在连接...");
 }
 
+/* 连接状态检查及重连函数 */
+void connect_check(){
+  if(WiFi.status() != WL_CONNECTED){  // 如果WIFI未连接
+    wifi_setup();
+  }
+  if (!mqttClient.connected()) // 如果MQTT未连接
+    {
+            mqtt_client_id += String(WiFi.macAddress()); // 每个客户端需要有唯一的ID，不然上线时会把其他相同ID的客户端踢下线
+            if(DEBUG_MODE)Serial.println("[DEBUG]MQTT正在连接...");
+            if (mqttClient.connect(mqtt_client_id.c_str(), mqtt_username, mqtt_password))// 尝试连接MQTT服务器
+            {
+                mqttClient.publish("esp32/state", "online"); // 连接成功后发布状态
+                if(DEBUG_MODE)Serial.println("[DEBUG]MQTT连接成功！");
+            }
+    }
+}
 
 // MQTT消息回调函数
 void mqtt_callback(char *topic, byte *payload, unsigned int length)
@@ -48,9 +65,8 @@ void mqtt_callback(char *topic, byte *payload, unsigned int length)
     if(DEBUG_MODE)Serial.println("\n[DEBUG]----------------END----------------");
 }
 
-int setup_iot_server(){
+void setup_iot_server(){
   if(DEBUG_MODE) Serial.printf("\n[DEBUG]WIFI Connecting to %s", wifi_ssid);
-  setup_wifi();
-  setup_MQTT();
-  return 1;
+  wifi_setup();
+  mqtt_setup();
 }

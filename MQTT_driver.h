@@ -7,6 +7,7 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
 
+
 extern const int DEBUG_MODE;
 
 // WiFi相关配置信息
@@ -27,10 +28,15 @@ extern unsigned long previousConnectMillis; // 毫秒时间记录
 extern const long intervalConnectMillis; // 时间间隔
 extern unsigned long previousPublishMillis; // 毫秒时间记录
 extern const long intervalPublishMillis; // 时间间隔
+extern unsigned long currentMillis; // 当前时间记录
 
-void setup_wifi();
-void setup_MQTT();
+extern WiFiClient tcpClient;
+extern PubSubClient mqttClient;
+
+void wifi_setup();
+void mqtt_setup();
 void mqtt_callback(char *topic, byte *payload, unsigned int length);
-int setup_iot_server();
+void setup_iot_server();
+void connect_check();
 
 #endif //MQTT_DRIVER_H
