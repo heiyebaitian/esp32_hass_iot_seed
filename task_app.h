@@ -5,6 +5,7 @@
 #include <Arduino.h> 
 #include <stdint.h>
 
+extern long rssi;
 
 void State_check_app();
 void MQTT_event_app();

@@ -39,6 +39,7 @@ void connect_check(){
   if(WiFi.status() != WL_CONNECTED){  // 如果WIFI未连接
     wifi_setup();
   }
+  rssi = WiFi.RSSI(); // 获取网络连接质量
   if (!mqttClient.connected()) // 如果MQTT未连接
     {
             mqtt_client_id += String(WiFi.macAddress()); // 每个客户端需要有唯一的ID，不然上线时会把其他相同ID的客户端踢下线
@@ -68,5 +69,6 @@ void mqtt_callback(char *topic, byte *payload, unsigned int length)
 void setup_iot_server(){
   if(DEBUG_MODE) Serial.printf("\n[DEBUG]WIFI Connecting to %s", wifi_ssid);
   wifi_setup();
+  rssi = WiFi.RSSI(); // 获取网络连接质量
   mqtt_setup();
 }
