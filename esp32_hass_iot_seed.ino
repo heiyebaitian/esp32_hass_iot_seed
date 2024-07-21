@@ -49,7 +49,7 @@ int light_status_normalization = 0;  //  常态化培养区光照系统状态
 
 
 int temperature_differentiation = 20; // 差异化培养区温度
-uint16_t humidity_differentiationn = 50; // 差异化培养区湿度 
+uint16_t humidity_differentiation = 50; // 差异化培养区湿度 
 uint16_t sh_differentiation = 50; // 差异化培养区土壤湿度 
 uint16_t co2_differentiation = 100; // 差异化培养区二氧化碳 
 uint16_t ch2o_differentiation = 100; //  差异化培养区甲醛 
@@ -59,7 +59,7 @@ int light_status_differentiation = 0;  //  差异化培养区光照系统状态
 
 
 
-int waterpump_status = 0; //  水泵状态
+int waterpump_status = 0; //  滴灌系统状态
 int water_status = 0;  //  水箱液位
 
 
@@ -89,6 +89,8 @@ void setup() {
     IO_init();
     setup_iot_server();
 
+
+    disableCore0WDT(); // 关闭定时器看门狗
     //协程初始化
     ts.init();//初始化 scheduler
     ts.addTask(Link_state_check_app_task);//将 Link_state_check_app_task 装载到任务管理器
@@ -100,13 +102,12 @@ void setup() {
     MQTT_event_app_task.enable(); //启动 MQTT_event_app_task 任务
     Iot_data_upload_app_task.enable(); //启动 Iot_data_upload_app_task 任务
 
-    disableCore0WDT(); // 关闭定时器看门狗
+
 
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-    digitalToggle(stateLedPin); // 20240720:此操作无实际作用，用于防止看门狗饿死，未来会移除
     currentMillis = millis(); // 读取当前时间
     ts.execute(); //多任务管理器保活
 }
