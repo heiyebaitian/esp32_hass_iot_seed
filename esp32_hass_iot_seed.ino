@@ -1,10 +1,14 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include <TaskScheduler.h>  // 多线程调度器
+//#include "soc/rtc_wdt.h"  //  看门狗
 #include "MQTT_driver.h"  //  MQTT驱动
 #include "task_app.h" //  协程回调函数
 
+
 #define digitalToggle(x) digitalWrite(x, !digitalRead(x))   // 翻转IO函数
+#define IOT_DATA_UPLOAD_DELAY 3000  // IOT数据上传周期(ms)
+#define LINK_STATE_CHECK_DELAY 10000  // 设备在线状态检查周期(ms)
 
 const int DEBUG_MODE=1;
 
@@ -33,6 +37,30 @@ unsigned long currentMillis = 0;  // 当前时间记录
 /* 系统运行数据 */
 long rssi = 0;
 /* 传感器数据记录 */
+int temperature_normalization = 20; // 常态化培养区温度
+uint16_t humidity_normalization = 50; // 常态化培养区湿度 
+uint16_t sh_normalization = 50; // 常态化培养区土壤湿度 
+uint16_t co2_normalization = 100; // 常态化培养区二氧化碳 
+uint16_t ch2o_normalization = 100; //  常态化培养区甲醛 
+uint16_t tvoc_normalization = 100; // 常态化培养区TVOC 
+int fan_status_normalization = 0;  //  常态化培养区通风系统状态
+int light_status_normalization = 0;  //  常态化培养区光照系统状态
+
+
+
+int temperature_differentiation = 20; // 差异化培养区温度
+uint16_t humidity_differentiationn = 50; // 差异化培养区湿度 
+uint16_t sh_differentiation = 50; // 差异化培养区土壤湿度 
+uint16_t co2_differentiation = 100; // 差异化培养区二氧化碳 
+uint16_t ch2o_differentiation = 100; //  差异化培养区甲醛 
+uint16_t tvoc_differentiation = 100; // 差异化培养区TVOC 
+int fan_status_differentiation = 0;  // 差异化培养区风扇状态
+int light_status_differentiation = 0;  //  差异化培养区光照系统状态
+
+
+
+int waterpump_status = 0; //  水泵状态
+int water_status = 0;  //  水箱液位
 
 
 
@@ -49,8 +77,9 @@ void IO_init();
 
 
 /* 创建多协程任务信息 */
-Task Link_state_check_app_task(10000,TASK_FOREVER,&State_check_app);  // 创建任务 连接状态检查任务 任务间隔10s 任务次数：始终
+Task Link_state_check_app_task(LINK_STATE_CHECK_DELAY,TASK_FOREVER,&State_check_app);  // 创建任务 连接状态检查任务 任务间隔10s 任务次数：始终
 Task MQTT_event_app_task(TASK_IMMEDIATE,TASK_FOREVER,&MQTT_event_app);  // 创建任务 MQTT事物任务  任务间隔0ms 任务次数：始终
+Task Iot_data_upload_app_task(IOT_DATA_UPLOAD_DELAY,TASK_FOREVER,&Iot_data_upload_app);  // 创建任务 连接状态检查任务 任务间隔10s 任务次数：始终
 
 
 
@@ -64,10 +93,14 @@ void setup() {
     ts.init();//初始化 scheduler
     ts.addTask(Link_state_check_app_task);//将 Link_state_check_app_task 装载到任务管理器
     ts.addTask(MQTT_event_app_task);//将 MQTT_event_app_task 装载到任务管理器
+    ts.addTask(Iot_data_upload_app_task);//将 Iot_data_upload_app_task 装载到任务管理器
 
     //启动任务
     Link_state_check_app_task.enable(); //启动 Link_state_check_app_task 任务
     MQTT_event_app_task.enable(); //启动 MQTT_event_app_task 任务
+    Iot_data_upload_app_task.enable(); //启动 Iot_data_upload_app_task 任务
+
+    disableCore0WDT(); // 关闭定时器看门狗
 
 }
 
@@ -90,6 +123,6 @@ void Serial_init(){
 
 /* IO初始化代码 */
 void IO_init(){
-    pinMode(stateLedPin,OUTPUT);
-    digitalWrite(stateLedPin,HIGH);
+  pinMode(stateLedPin,OUTPUT);
+  digitalWrite(stateLedPin,HIGH);
 }

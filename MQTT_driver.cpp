@@ -16,6 +16,7 @@ void wifi_setup(){
     Serial.print("[DEBUG]IP address: ");
     Serial.println(WiFi.localIP());
   }
+  hass_debug_log("[SYS]WIFI连接成功！");
 }
 
 /* MQTT初始化函数 */
@@ -31,6 +32,7 @@ void mqtt_setup(){
   {
     mqttClient.publish("esp32/state", "online"); // 连接成功后发布状态
     if(DEBUG_MODE)Serial.println("[DEBUG]MQTT连接成功！");
+    hass_debug_log("[SYS]MQTT连接成功!");
   }
 }
 
@@ -48,6 +50,7 @@ void connect_check(){
             {
                 mqttClient.publish("esp32/state", "online"); // 连接成功后发布状态
                 if(DEBUG_MODE)Serial.println("[DEBUG]MQTT连接成功！");
+                hass_debug_log("[SYS]MQTT连接成功!");
             }
     }
 }
@@ -66,9 +69,15 @@ void mqtt_callback(char *topic, byte *payload, unsigned int length)
     if(DEBUG_MODE)Serial.println("\n[DEBUG]----------------END----------------");
 }
 
+/* Iot服务初始化函数 */
 void setup_iot_server(){
   if(DEBUG_MODE) Serial.printf("\n[DEBUG]WIFI Connecting to %s", wifi_ssid);
   wifi_setup();
   rssi = WiFi.RSSI(); // 获取网络连接质量
   mqtt_setup();
+}
+
+/* HASS debug日志传输函数 */
+void hass_debug_log(char *log){
+    mqttClient.publish("esp32/system/debug", log); 
 }
