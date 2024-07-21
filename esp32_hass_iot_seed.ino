@@ -1,12 +1,13 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include <TaskScheduler.h>  // 多线程调度器
-//#include "soc/rtc_wdt.h"  //  看门狗
 #include "MQTT_driver.h"  //  MQTT驱动
 #include "task_app.h" //  协程回调函数
 
 
 #define digitalToggle(x) digitalWrite(x, !digitalRead(x))   // 翻转IO函数
+#define NOP do { __asm__ __volatile__ ("nop"); } while (0)  // NOP函数
+
 #define IOT_DATA_UPLOAD_DELAY 3000  // IOT数据上传周期(ms)
 #define LINK_STATE_CHECK_DELAY 10000  // 设备在线状态检查周期(ms)
 
@@ -19,6 +20,7 @@ const int stateLedPin = 48;
 /* WiFi相关配置信息 */
 const char *wifi_ssid = "iotgateway";
 const char *wifi_password = "guoxilin";
+
 /* MQTT相关配置信息 */
 const char *mqtt_broker_addr = "192.168.1.101"; // MQTT服务器地址
 const uint16_t mqtt_broker_port = 1883; // MQTT服务器端口            
@@ -26,25 +28,34 @@ const char *mqtt_username = "esp32"; // MQTT账号
 const char *mqtt_password = "12345678"; // MQTT密码
 const uint16_t mqtt_client_buff_size = 4096; // 客户端缓存大小（非必须）
 String mqtt_client_id = "esp32_client"; // 客户端ID
+const char *mqtt_willTopic = "esp32/state"; // MQTT连接遗嘱主题
+
 const char *mqtt_topic_pub = "esp32/test"; // 需要发布到的主题
 const char *mqtt_topic_sub = "esp32/test"; // 需要订阅的主题
+
 /* 系统事件时间记录 */
 unsigned long previousConnectMillis = 0; // 毫秒时间记录
 const long intervalConnectMillis = 5000; // 时间间隔
 unsigned long previousPublishMillis = 0; // 毫秒时间记录
 const long intervalPublishMillis = 5000; // 时间间隔
 unsigned long currentMillis = 0;  // 当前时间记录
+
+/* 系统标志位 */
+bool enable_Iot_data_upload = true;
+
 /* 系统运行数据 */
 long rssi = 0;
-/* 传感器数据记录 */
+/* 传感器及系统状态数据 */
 int temperature_normalization = 20; // 常态化培养区温度
 uint16_t humidity_normalization = 50; // 常态化培养区湿度 
 uint16_t sh_normalization = 50; // 常态化培养区土壤湿度 
 uint16_t co2_normalization = 100; // 常态化培养区二氧化碳 
 uint16_t ch2o_normalization = 100; //  常态化培养区甲醛 
 uint16_t tvoc_normalization = 100; // 常态化培养区TVOC 
-int fan_status_normalization = 0;  //  常态化培养区通风系统状态
-int light_status_normalization = 0;  //  常态化培养区光照系统状态
+bool fan_state_normalization = false;  //  常态化培养区通风系统状态
+bool light_state_normalization = false;  //  常态化培养区光照系统状态
+bool refrigeration_state_normalization = false;  //  常态化培养区制冷系统状态
+bool heating_state_normalization = false; //  常态化培养区制热系统状态
 
 
 
@@ -54,13 +65,15 @@ uint16_t sh_differentiation = 50; // 差异化培养区土壤湿度
 uint16_t co2_differentiation = 100; // 差异化培养区二氧化碳 
 uint16_t ch2o_differentiation = 100; //  差异化培养区甲醛 
 uint16_t tvoc_differentiation = 100; // 差异化培养区TVOC 
-int fan_status_differentiation = 0;  // 差异化培养区风扇状态
-int light_status_differentiation = 0;  //  差异化培养区光照系统状态
+bool fan_state_differentiation = false;  // 差异化培养区通风系统状态
+bool light_state_differentiation = false;  //  差异化培养区光照系统状态
+bool refrigeration_state_differentiation = false;  //  差异化培养区制冷系统状态
+bool heating_state_differentiation = false; //  差异化培养区制热系统状态
 
 
-
-int waterpump_status = 0; //  滴灌系统状态
-int water_status = 0;  //  水箱液位
+/* 机械臂数据 */
+bool waterpump_state = false; //  滴灌系统状态
+uint16_t water_liquid_level = 20;  //  水箱液位
 
 
 
@@ -90,7 +103,7 @@ void setup() {
     setup_iot_server();
 
 
-    disableCore0WDT(); // 关闭定时器看门狗
+    //disableCore0WDT(); // 关闭定时器看门狗
     //协程初始化
     ts.init();//初始化 scheduler
     ts.addTask(Link_state_check_app_task);//将 Link_state_check_app_task 装载到任务管理器
@@ -108,10 +121,11 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
+    //digitalToggle(stateLedPin); // 20240720:此操作无实际作用，用于防止看门狗饿死，未来会移除
     currentMillis = millis(); // 读取当前时间
     ts.execute(); //多任务管理器保活
+    delay(1); // 防止任务看门狗饿死
 }
-
 
 
 
