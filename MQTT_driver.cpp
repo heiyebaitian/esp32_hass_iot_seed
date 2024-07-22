@@ -13,8 +13,8 @@ void wifi_setup(){
     if(DEBUG_MODE) Serial.print(".");
   }
   if(DEBUG_MODE){
-    Serial.println("[DEBUG]WIFI connect is ok.");
-    Serial.print("[DEBUG]IP address: ");
+    Serial.println("[DEBUG]WIFI连接正常.");
+    Serial.print("[DEBUG]IP地址: ");
     Serial.println(WiFi.localIP());
   }
   hass_debug_log("[SYS]WIFI连接成功！");
@@ -131,8 +131,8 @@ void mqtt_callback(char *topic, byte *payload, unsigned int length)
 
 
       if(DEBUG_MODE){
-      Serial.printf("\n[DEBUG]Message arrived in topic[%s], length [%d]\n", str_topic.c_str(), length);
-      Serial.printf("[DEBUG]Message:%s",str_payload.c_str());
+      Serial.printf("\n[DEBUG]收到MQTT消息 主题[%s], 长度[%d]\n", str_topic.c_str(), length);
+      Serial.printf("[DEBUG]消息内容:%s",str_payload.c_str());
       }
       /*for (int i = 0; i < length; i++)
       {

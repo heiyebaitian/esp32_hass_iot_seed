@@ -15,7 +15,7 @@ void State_check_app(){
             mqttClient.publish("esp32/differentiation/state", "online");
             mqttClient.publish("esp32/mechanical_arm/state", "online");
     }
-    if(DEBUG_MODE)Serial.println("[DEBUG]Connect state OK!");
+    if(DEBUG_MODE)Serial.println("[DEBUG]连接检查正常!");
 }
 
 
@@ -40,7 +40,7 @@ void Iot_data_upload_app(){
                                         ",\"TVOC\":" + String(tvoc_normalization) +
                                         ",\"sh\":" + String(sh_normalization) +
                                         "}";
-  if(DEBUG_MODE) Serial.printf("[DEBUG]%s\n",sensor1_normalization_string.c_str());
+  if(DEBUG_MODE) Serial.printf("[DEBUG]MQTT发送：%s\n",sensor1_normalization_string.c_str());
   mqttClient.publish("esp32/normalization/sensor1",sensor1_normalization_string.c_str());
 
   /* 差异化培养区传感器数据上传 */
@@ -51,7 +51,7 @@ void Iot_data_upload_app(){
                                         ",\"TVOC\":" + String(tvoc_differentiation) +
                                         ",\"sh\":" + String(sh_differentiation) +
                                         "}";
-  if(DEBUG_MODE) Serial.printf("[DEBUG]%s\n",sensor1_differentiation_string.c_str());
+  if(DEBUG_MODE) Serial.printf("[DEBUG]MQTT发送：%s\n",sensor1_differentiation_string.c_str());
   mqttClient.publish("esp32/differentiation/sensor1",sensor1_differentiation_string.c_str());
 
   /* 常态化培养区执行器数据上传 */
@@ -91,7 +91,7 @@ void Iot_data_upload_app(){
   mqttClient.publish("esp32/mechanical_arm/water",water_liquid_level_string.c_str());
   
   
-  if(DEBUG_MODE) Serial.println("[DEBUG]Iot data upload finish！");
+  if(DEBUG_MODE) Serial.println("[DEBUG]Iot数据上传完成！");
 }
 
 
