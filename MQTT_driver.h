@@ -9,7 +9,7 @@
 
 
 
-extern const int DEBUG_MODE;
+extern const bool DEBUG_MODE;
 
 /* WiFi相关配置信息 */
 extern const char *wifi_ssid;
