@@ -12,3 +12,8 @@
 ![](https://github.com/heiyebaitian/esp32_hass_iot_seed/blob/main/public/image/home-2.png)
 ![](https://github.com/heiyebaitian/esp32_hass_iot_seed/blob/main/public/image/home-phone.png)
 
+
+### 优雅的动效与图表数据呈现
+基于WebUI设计的控件为智能化育种管理平台带来了全新流畅的优雅动效设计与丰富的控件功能,数据可以不再以单一的数字方式呈现,而是能够成为图表控件的一部分,让数据人工分析处理更加直观高效便捷。
+![](https://github.com/heiyebaitian/esp32_hass_iot_seed/blob/main/public/image/chart-1.png)
+![](https://github.com/heiyebaitian/esp32_hass_iot_seed/blob/main/public/image/chart-2.png)
