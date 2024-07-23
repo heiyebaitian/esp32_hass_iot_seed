@@ -11,9 +11,9 @@ void State_check_app(){
     {
             previousPublishMillis = currentMillis;
             mqttClient.publish("esp32/state", "online");
-            mqttClient.publish("esp32/normalization/state", "online");
-            mqttClient.publish("esp32/differentiation/state", "online");
-            mqttClient.publish("esp32/mechanical_arm/state", "online");
+            //mqttClient.publish("esp32/normalization/state", "online");
+            //mqttClient.publish("esp32/differentiation/state", "online");
+            //mqttClient.publish("esp32/mechanical_arm/state", "online");
     }
     if(DEBUG_MODE)Serial.println("[DEBUG]连接检查正常!");
 }

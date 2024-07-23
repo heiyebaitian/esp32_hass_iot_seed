@@ -94,6 +94,7 @@ void IO_init();
 
 
 
+
 /* 创建多协程任务信息 */
 Task Link_state_check_app_task(LINK_STATE_CHECK_DELAY,TASK_FOREVER,&State_check_app);  // 创建任务 连接状态检查任务 任务次数：始终
 Task MQTT_event_app_task(TASK_IMMEDIATE,TASK_FOREVER,&MQTT_event_app);  // 创建任务 MQTT事物任务 任务次数：始终
@@ -136,7 +137,7 @@ void loop() {
 
 /* 串口初始化代码 */
 void Serial_init(){
-  if(DEBUG_MODE) Serial.begin(SERIAL_DEBUG_BPS);
+  if(DEBUG_MODE) Serial.begin(SERIAL_DEBUG_BPS); // DEBUG模式
   else Serial.begin(SERIAL_BPS); //TX:43 RX:44
   Serial1.begin(SERIAL1_BPS); //TX:16 RX:15 气体传感器占用
   Serial2.begin(SERIAL2_BPS); //TX:20 RX:19

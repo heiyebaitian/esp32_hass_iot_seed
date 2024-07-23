@@ -3,6 +3,8 @@
 #include "task_app.h"
 
 
+void(* resetFunc) (void) = 0; //重启命令
+
 
 /* WIFI初始化函数 */
 void wifi_setup(){
@@ -38,7 +40,7 @@ void mqtt_setup(){
     hass_debug_log("[SYS]MQTT连接成功!");
     mqtt_subscribe_setup();
     if(DEBUG_MODE)Serial.println("[DEBUG]MQTT订阅列表添加成功！");
-    hass_debug_log("[SYS]MQTTMQTT订阅列表添加成功！");
+    hass_debug_log("[SYS]MQTT订阅列表添加成功！");
   }
 }
 
@@ -128,7 +130,16 @@ void mqtt_callback(char *topic, byte *payload, unsigned int length)
         else if(str_payload == "OFF") light_state_differentiation = false;
       }
 
+      // 系统重启指令
+      if(str_topic == "esp32/system/reboot"){
+        if(str_payload == "reboot"){
+          if(DEBUG_MODE)Serial.printf("\n\n[DEBUG]系统即将执行重启操作！\n\n");
+          hass_debug_log("[SYS]育种箱即将重启！");
+          if(DEBUG_MODE)Serial.printf("\n\n[DEBUG]系统重启！\n\n");
 
+          resetFunc(); 
+        }
+      }
 
       if(DEBUG_MODE){
       Serial.printf("\n[DEBUG]收到MQTT消息 主题[%s], 长度[%d]\n", str_topic.c_str(), length);
@@ -155,6 +166,8 @@ void mqtt_subscribe_setup(){
   mqttClient.subscribe("esp32/differentiation/refrigeration");  // 差异化培养区制冷系统
   mqttClient.subscribe("esp32/differentiation/heating");  // 差异化培养区制热系统
   mqttClient.subscribe("esp32/differentiation/light");  // 差异化培养区光照系统
+
+  mqttClient.subscribe("esp32/system/reboot");  // 系统重启指令
   
   
 }
