@@ -20,6 +20,7 @@ void sh_sernor_read(){
 }
 
 
+/* 气体传感器读取 */
 void air_senor_read(){
     char cash[50]={0}; //串口接收数据暂存
   uint16_t length = 0; // 长度计数器
@@ -62,8 +63,42 @@ void air_senor_read(){
 }
 
 
-
-
+/* 执行器写入 */
+void actuator_write(){
+  if(fan_state_normalization == true) 
+    digitalWrite(fan_normalization_Pin,HIGH);
+  else 
+    digitalWrite(fan_normalization_Pin,LOW);
+  if(light_state_normalization == true)
+    digitalWrite(light_normalization_Pin,HIGH);
+  else 
+    digitalWrite(light_normalization_Pin,LOW);
+  if(refrigeration_state_normalization == true)
+    digitalWrite(refrigeration_normalization_Pin,HIGH);
+  else
+    digitalWrite(refrigeration_normalization_Pin,LOW);
+  if(heating_state_normalization == true)
+    digitalWrite(heating_normalization_Pin,HIGH);
+  else
+    digitalWrite(heating_normalization_Pin,LOW);
+  
+  if(fan_state_differentiation == true) 
+    digitalWrite(fan_differentiation_Pin,HIGH); 
+  else 
+    digitalWrite(fan_differentiation_Pin,LOW);
+  if(light_state_differentiation == true)
+    digitalWrite(light_differentiation_Pin,HIGH);
+  else
+    digitalWrite(light_differentiation_Pin,LOW);
+  if(refrigeration_state_differentiation == true)
+    digitalWrite(refrigeration_differentiation_Pin,HIGH);
+  else
+    digitalWrite(refrigeration_differentiation_Pin,LOW);
+  if(heating_state_differentiation == true)
+    digitalWrite(heating_differentiation_Pin,HIGH);
+  else
+    digitalWrite(heating_differentiation_Pin,LOW);
+}
 
 
 

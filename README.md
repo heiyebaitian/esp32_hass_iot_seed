@@ -1,7 +1,7 @@
 # esp32_hass_iot_seed
 
  基于Aiot-NLP的智能育种箱 代码,该存储库包含了ESP32S3控制器代码及Home Assistant(下面简称HASS)配置文件。
- 该代码无法独立使用,详细请见[GitHub:AIoT-Smart-Breeding-Box](https://github.com/heiyebaitian/AIoT-Smart-Breeding-Box)获取项目完成内容。
+ 该代码无法独立使用,详细请见[GitHub:AIoT-Smart-Breeding-Box](https://github.com/heiyebaitian/AIoT-Smart-Breeding-Box)获取项目完整内容。
 
 ## 功能介绍
 

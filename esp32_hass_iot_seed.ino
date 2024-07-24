@@ -23,10 +23,17 @@
 const bool DEBUG_MODE = true;
 
 /* I/O引脚配置 */
-const int stateLedPin = 48;
+//const int stateLedPin = 48; // LED状态灯(已弃用)
 const int sh_normalization_Pin = 4; // 常态化培养区土壤湿度传感器
 const int sh_differentiation_Pin = 5; // 差异化培养区土壤湿度传感器
-
+const int fan_normalization_Pin = 6; // 常态化培养区通风系统
+const int light_normalization_Pin = 7; // 常态化培养区光照系统
+const int refrigeration_normalization_Pin = 15; // 常态化培养区制冷系统
+const int heating_normalization_Pin = 16; // 常态化培养区制热系统
+const int fan_differentiation_Pin = 17; // 差异化培养区通风系统
+const int light_differentiation_Pin = 18; // 差异化培养区光照系统
+const int refrigeration_differentiation_Pin = 8; // 差异化培养区制冷系统
+const int heating_differentiation_Pin = 3; // 差异化培养区制热系统
 
 
 /* WiFi相关配置信息 */
@@ -107,7 +114,7 @@ Task Link_state_check_app_task(LINK_STATE_CHECK_DELAY,TASK_FOREVER,&State_check_
 Task MQTT_event_app_task(TASK_IMMEDIATE,TASK_FOREVER,&MQTT_event_app);  // 创建任务 MQTT事务任务 任务次数：始终
 Task Iot_data_upload_app_task(IOT_DATA_UPLOAD_DELAY,TASK_FOREVER,&Iot_data_upload_app);  // 创建任务 连接状态检查任务 任务次数：始终
 Task Serial1_analysis_app_task(TASK_IMMEDIATE,TASK_FOREVER,&Serial1_analysis_app);  // 创建任务 串口处理任务 任务次数：始终
-Task Sensor_read_app_task(TASK_IMMEDIATE,TASK_FOREVER,&Sensor_read_app);  // 创建任务 传感器数据采集任务 任务次数：始终
+Task Sensor_rw_app_task(TASK_IMMEDIATE,TASK_FOREVER,&Sensor_rw_app);  // 创建任务 传感器数据采集任务 任务次数：始终
 
 
 
@@ -125,14 +132,14 @@ void setup() {
     ts.addTask(MQTT_event_app_task);//将 MQTT_event_app_task 装载到任务管理器
     ts.addTask(Iot_data_upload_app_task);//将 Iot_data_upload_app_task 装载到任务管理器
     ts.addTask(Serial1_analysis_app_task);//将 Serial1_app_task 装载到任务管理器
-    ts.addTask(Sensor_read_app_task);//将 Sensor_read_app_task 装载到任务管理器
+    ts.addTask(Sensor_rw_app_task);//将 Sensor_read_app_task 装载到任务管理器
 
     //启动任务
     Link_state_check_app_task.enable(); //启动 Link_state_check_app_task 任务
     MQTT_event_app_task.enable(); //启动 MQTT_event_app_task 任务
     Iot_data_upload_app_task.enable(); //启动 Iot_data_upload_app_task 任务
     Serial1_analysis_app_task.enable(); //启动 Serial1_app_task 任务
-    Sensor_read_app_task.enable();  //启动 Sensor_read_app_task 任务
+    Sensor_rw_app_task.enable();  //启动 Sensor_read_app_task 任务
 }
 
 void loop() {
@@ -155,6 +162,34 @@ void Serial_init(){
 
 /* IO初始化代码 */
 void IO_init(){
-  pinMode(stateLedPin,OUTPUT);
-  digitalWrite(stateLedPin,HIGH);
+  //pinMode(stateLedPin,OUTPUT);
+  //digitalWrite(stateLedPin,HIGH);
+  pinMode(sh_normalization_Pin, INPUT);
+  pinMode(sh_differentiation_Pin, INPUT);
+  
+  pinMode(fan_normalization_Pin, OUTPUT);
+  digitalWrite(fan_normalization_Pin,HIGH);
+  
+  pinMode(light_normalization_Pin, OUTPUT);
+  digitalWrite(light_normalization_Pin,HIGH);
+  
+  pinMode(refrigeration_normalization_Pin, OUTPUT);
+  digitalWrite(refrigeration_normalization_Pin,HIGH);
+  
+  pinMode(heating_normalization_Pin, OUTPUT);
+  digitalWrite(heating_normalization_Pin,HIGH);
+  
+  pinMode(fan_differentiation_Pin, OUTPUT);
+  digitalWrite(fan_differentiation_Pin,HIGH);
+  
+  pinMode(light_differentiation_Pin, OUTPUT);
+  digitalWrite(light_differentiation_Pin,HIGH);
+  
+  pinMode(refrigeration_differentiation_Pin, OUTPUT);
+  digitalWrite(refrigeration_differentiation_Pin,HIGH);
+  
+  pinMode(heating_differentiation_Pin, OUTPUT);
+  digitalWrite(heating_differentiation_Pin,HIGH);
+  
+
 }
