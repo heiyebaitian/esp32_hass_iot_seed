@@ -20,7 +20,7 @@ void State_check_app(){
 }
 
 
-/* MQTT事物任务程序 */
+/* MQTT事务任务程序 */
 void MQTT_event_app(){
     mqttClient.loop(); // 处理MQTT事务
 }

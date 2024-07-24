@@ -104,7 +104,7 @@ void IO_init();
 
 /* 创建多协程任务信息 */
 Task Link_state_check_app_task(LINK_STATE_CHECK_DELAY,TASK_FOREVER,&State_check_app);  // 创建任务 连接状态检查任务 任务次数：始终
-Task MQTT_event_app_task(TASK_IMMEDIATE,TASK_FOREVER,&MQTT_event_app);  // 创建任务 MQTT事物任务 任务次数：始终
+Task MQTT_event_app_task(TASK_IMMEDIATE,TASK_FOREVER,&MQTT_event_app);  // 创建任务 MQTT事务任务 任务次数：始终
 Task Iot_data_upload_app_task(IOT_DATA_UPLOAD_DELAY,TASK_FOREVER,&Iot_data_upload_app);  // 创建任务 连接状态检查任务 任务次数：始终
 Task Serial1_analysis_app_task(TASK_IMMEDIATE,TASK_FOREVER,&Serial1_analysis_app);  // 创建任务 串口处理任务 任务次数：始终
 Task Sensor_read_app_task(TASK_IMMEDIATE,TASK_FOREVER,&Sensor_read_app);  // 创建任务 传感器数据采集任务 任务次数：始终

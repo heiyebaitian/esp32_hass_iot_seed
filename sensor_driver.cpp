@@ -4,8 +4,8 @@
 
 #define SH_NORMALIZATION_SENSOR_MAX 3000 // 土壤湿度0%时的模拟量
 #define SH_NORMALIZATION_SENSOR_MIN 1000 // 土壤湿度100%时的模拟量
-#define SH_DIFFERENTIATION_SENSOR_MAX 3000
-#define SH_DIFFERENTIATION_SENSOR_MIN 1000
+#define SH_DIFFERENTIATION_SENSOR_MAX 3000 // 土壤湿度0%时的模拟量
+#define SH_DIFFERENTIATION_SENSOR_MIN 1000 // 土壤湿度0%时的模拟量
 
 /* 土壤湿度传感器读取 */
 void sh_sernor_read(){
