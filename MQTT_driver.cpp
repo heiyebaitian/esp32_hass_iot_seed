@@ -1,6 +1,7 @@
 // MQTT_driver.cpp  
 #include "MQTT_driver.h "  
 #include "task_app.h"
+#include "sensor_driver.h"
 
 
 void(* resetFunc) (void) = 0; //重启命令

@@ -1,10 +1,9 @@
-// task_app.h
-#ifndef TASK_APP_H  
-#define TASK_APP_H 
+// sensor_driver.h
+#ifndef SENSOR_DRIVER_H  
+#define SENSOR_DRIVER_H
 
 #include <Arduino.h> 
 #include <stdint.h>
-
 
 extern const bool DEBUG_MODE;
 
@@ -51,12 +50,13 @@ extern bool heating_state_differentiation; // 差异化培养区制热系统状�
 extern bool waterpump_state; //  滴灌系统状态
 extern uint16_t water_liquid_level;  //  水箱液位
 
-void State_check_app();
-void MQTT_event_app();
-void Iot_data_upload_app();
-void Serial1_analysis_app();
-void Sensor_read_app();
+
+void sh_sernor_read();
+void air_senor_read();
+uint16_t merge_high_low_bytes(uint8_t high_byte, uint8_t low_byte);
+bool bit7_analysis_set(char c);
+char clear_bit7(char c);
 
 
 
-#endif //TASK_APP_H
+#endif // SENSOR_DRIVER_H  

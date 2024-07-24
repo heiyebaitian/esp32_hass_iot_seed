@@ -3,6 +3,7 @@
 #include <TaskScheduler.h>  // 多线程调度器
 #include "MQTT_driver.h"  //  MQTT驱动
 #include "task_app.h" //  协程回调函数
+#include "sensor_driver.h" // 传感器驱动
 
 
 #define digitalToggle(x) digitalWrite(x, !digitalRead(x))   // 翻转IO函数
@@ -10,16 +11,22 @@
 
 #define IOT_DATA_UPLOAD_DELAY 3000  // IOT数据上传周期(ms)
 #define LINK_STATE_CHECK_DELAY 10000  // 设备在线状态检查周期(ms)
+#define SENSOR_READ_DELAY 3000  //  传感器数据采集周期(ms)
 
 #define SERIAL_BPS 115200 // 串口0波特率
 #define SERIAL_DEBUG_BPS 230400 //串口0 DEBUG波特率
 #define SERIAL1_BPS 9600 // 串口1波特率
 #define SERIAL2_BPS 115200 // 串口2波特率
 
+
+
 const bool DEBUG_MODE = true;
 
 /* I/O引脚配置 */
 const int stateLedPin = 48;
+const int sh_normalization_Pin = 4; // 常态化培养区土壤湿度传感器
+const int sh_differentiation_Pin = 5; // 差异化培养区土壤湿度传感器
+
 
 
 /* WiFi相关配置信息 */
@@ -51,10 +58,10 @@ bool enable_Iot_data_upload = true;
 /* 系统运行数据 */
 long rssi = 0;
 /* 传感器及系统状态数据 */
-double temperature_normalization = 20; // 常态化培养区温度
-double humidity_normalization = 50; // 常态化培养区湿度 
-uint16_t sh_normalization = 50; // 常态化培养区土壤湿度 
-uint16_t co2_normalization = 100; // 常态化培养区二氧化碳 
+double temperature_normalization = 25; // 常态化培养区温度
+double humidity_normalization = 60; // 常态化培养区湿度 
+uint16_t sh_normalization = 60; // 常态化培养区土壤湿度 
+uint16_t co2_normalization = 200; // 常态化培养区二氧化碳 
 uint16_t ch2o_normalization = 100; //  常态化培养区甲醛 
 uint16_t tvoc_normalization = 100; // 常态化培养区TVOC 
 bool fan_state_normalization = false;  //  常态化培养区通风系统状态
@@ -64,10 +71,10 @@ bool heating_state_normalization = false; //  常态化培养区制热系统状�
 
 
 
-double temperature_differentiation = 20; // 差异化培养区温度
-double humidity_differentiation = 50; // 差异化培养区湿度 
-uint16_t sh_differentiation = 50; // 差异化培养区土壤湿度 
-uint16_t co2_differentiation = 100; // 差异化培养区二氧化碳 
+double temperature_differentiation = 25; // 差异化培养区温度
+double humidity_differentiation = 60; // 差异化培养区湿度 
+uint16_t sh_differentiation = 60; // 差异化培养区土壤湿度 
+uint16_t co2_differentiation = 200; // 差异化培养区二氧化碳 
 uint16_t ch2o_differentiation = 100; //  差异化培养区甲醛 
 uint16_t tvoc_differentiation = 100; // 差异化培养区TVOC 
 bool fan_state_differentiation = false;  // 差异化培养区通风系统状态
@@ -99,7 +106,8 @@ void IO_init();
 Task Link_state_check_app_task(LINK_STATE_CHECK_DELAY,TASK_FOREVER,&State_check_app);  // 创建任务 连接状态检查任务 任务次数：始终
 Task MQTT_event_app_task(TASK_IMMEDIATE,TASK_FOREVER,&MQTT_event_app);  // 创建任务 MQTT事物任务 任务次数：始终
 Task Iot_data_upload_app_task(IOT_DATA_UPLOAD_DELAY,TASK_FOREVER,&Iot_data_upload_app);  // 创建任务 连接状态检查任务 任务次数：始终
-Task Serial1_analysis_app_task(TASK_IMMEDIATE,TASK_FOREVER,&Serial1_analysis_app);  // 创建任务 连接状态检查任务 任务次数：始终
+Task Serial1_analysis_app_task(TASK_IMMEDIATE,TASK_FOREVER,&Serial1_analysis_app);  // 创建任务 串口处理任务 任务次数：始终
+Task Sensor_read_app_task(TASK_IMMEDIATE,TASK_FOREVER,&Sensor_read_app);  // 创建任务 传感器数据采集任务 任务次数：始终
 
 
 
@@ -117,12 +125,14 @@ void setup() {
     ts.addTask(MQTT_event_app_task);//将 MQTT_event_app_task 装载到任务管理器
     ts.addTask(Iot_data_upload_app_task);//将 Iot_data_upload_app_task 装载到任务管理器
     ts.addTask(Serial1_analysis_app_task);//将 Serial1_app_task 装载到任务管理器
+    ts.addTask(Sensor_read_app_task);//将 Sensor_read_app_task 装载到任务管理器
 
     //启动任务
     Link_state_check_app_task.enable(); //启动 Link_state_check_app_task 任务
     MQTT_event_app_task.enable(); //启动 MQTT_event_app_task 任务
     Iot_data_upload_app_task.enable(); //启动 Iot_data_upload_app_task 任务
     Serial1_analysis_app_task.enable(); //启动 Serial1_app_task 任务
+    Sensor_read_app_task.enable();  //启动 Sensor_read_app_task 任务
 }
 
 void loop() {
