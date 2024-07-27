@@ -22,7 +22,7 @@ void sh_sernor_read(){
 
 /* 气体传感器读取 */
 void air_senor_read(){
-    char cash[50]={0}; //串口接收数据暂存
+  char cash[50]={0}; //串口接收数据暂存
   uint16_t length = 0; // 长度计数器
   if(Serial1.available() == 0) return;
   while(Serial1.available()>0){ //检查缓冲区是否存在数据
@@ -62,42 +62,57 @@ void air_senor_read(){
   }
 }
 
+/* 液位传感器读取 */
+void water_liquid_level_read(){
+  uint16_t vale = digitalRead(water_liquid_level_Pin);
+  if(vale == 1){
+    if(water_liquid_level>80) water_liquid_level--;
+    if(water_liquid_level<80) water_liquid_level++;
+  }
+   if(vale == 0){
+    if(water_liquid_level>20) water_liquid_level--;
+    if(water_liquid_level<20) water_liquid_level++;
+  }
+}
+
+
+
 
 /* 执行器写入 */
 void actuator_write(){
   if(fan_state_normalization == true) 
-    digitalWrite(fan_normalization_Pin,HIGH);
-  else 
     digitalWrite(fan_normalization_Pin,LOW);
-  if(light_state_normalization == true)
-    digitalWrite(light_normalization_Pin,HIGH);
   else 
+    digitalWrite(fan_normalization_Pin,HIGH);
+  if(light_state_normalization == true)
     digitalWrite(light_normalization_Pin,LOW);
+  else 
+    digitalWrite(light_normalization_Pin,HIGH);
   if(refrigeration_state_normalization == true)
-    digitalWrite(refrigeration_normalization_Pin,HIGH);
-  else
     digitalWrite(refrigeration_normalization_Pin,LOW);
-  if(heating_state_normalization == true)
-    digitalWrite(heating_normalization_Pin,HIGH);
   else
+    digitalWrite(refrigeration_normalization_Pin,HIGH);
+  if(heating_state_normalization == true)
     digitalWrite(heating_normalization_Pin,LOW);
+  else
+    digitalWrite(heating_normalization_Pin,HIGH);
   
   if(fan_state_differentiation == true) 
-    digitalWrite(fan_differentiation_Pin,HIGH); 
+    digitalWrite(fan_differentiation_Pin,LOW); 
   else 
-    digitalWrite(fan_differentiation_Pin,LOW);
+    digitalWrite(fan_differentiation_Pin,HIGH);
   if(light_state_differentiation == true)
-    digitalWrite(light_differentiation_Pin,HIGH);
-  else
     digitalWrite(light_differentiation_Pin,LOW);
+  else
+    digitalWrite(light_differentiation_Pin,HIGH);
   if(refrigeration_state_differentiation == true)
-    digitalWrite(refrigeration_differentiation_Pin,HIGH);
-  else
     digitalWrite(refrigeration_differentiation_Pin,LOW);
-  if(heating_state_differentiation == true)
-    digitalWrite(heating_differentiation_Pin,HIGH);
   else
+    digitalWrite(refrigeration_differentiation_Pin,HIGH);
+  if(heating_state_differentiation == true)
     digitalWrite(heating_differentiation_Pin,LOW);
+  else
+    digitalWrite(heating_differentiation_Pin,HIGH);
 }
 
 

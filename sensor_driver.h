@@ -18,6 +18,7 @@ extern const int fan_differentiation_Pin; // 差异化培养区通风系统
 extern const int light_differentiation_Pin; // 差异化培养区光照系统
 extern const int refrigeration_differentiation_Pin; // 差异化培养区制冷系统
 extern const int heating_differentiation_Pin; // 差异化培养区制热系统
+extern const int water_liquid_level_Pin; // 液位传感器
 
 /* 系统运行数据 */
 extern long rssi;
@@ -60,6 +61,7 @@ extern uint16_t water_liquid_level;  //  水箱液位
 
 void sh_sernor_read();
 void air_senor_read();
+void water_liquid_level_read();
 void actuator_write();
 uint16_t merge_high_low_bytes(uint8_t high_byte, uint8_t low_byte);
 bool bit7_analysis_set(char c);

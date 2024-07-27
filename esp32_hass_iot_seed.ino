@@ -24,16 +24,18 @@ const bool DEBUG_MODE = true;
 
 /* I/O引脚配置 */
 //const int stateLedPin = 48; // LED状态灯(已弃用)
-const int sh_normalization_Pin = 4; // 常态化培养区土壤湿度传感器
-const int sh_differentiation_Pin = 5; // 差异化培养区土壤湿度传感器
+const int sh_normalization_Pin = 1; // 常态化培养区土壤湿度传感器
+const int sh_differentiation_Pin = 2; // 差异化培养区土壤湿度传感器
 const int fan_normalization_Pin = 6; // 常态化培养区通风系统
 const int light_normalization_Pin = 7; // 常态化培养区光照系统
-const int refrigeration_normalization_Pin = 15; // 常态化培养区制冷系统
-const int heating_normalization_Pin = 16; // 常态化培养区制热系统
-const int fan_differentiation_Pin = 17; // 差异化培养区通风系统
-const int light_differentiation_Pin = 18; // 差异化培养区光照系统
-const int refrigeration_differentiation_Pin = 8; // 差异化培养区制冷系统
-const int heating_differentiation_Pin = 3; // 差异化培养区制热系统
+const int refrigeration_normalization_Pin = 17; // 常态化培养区制冷系统
+const int heating_normalization_Pin = 18; // 常态化培养区制热系统
+const int fan_differentiation_Pin = 8; // 差异化培养区通风系统
+const int light_differentiation_Pin = 3; // 差异化培养区光照系统
+const int refrigeration_differentiation_Pin = 46; // 差异化培养区制冷系统
+const int heating_differentiation_Pin = 9; // 差异化培养区制热系统
+const int water_liquid_level_Pin = 21; // 液位传感器
+
 
 
 /* WiFi相关配置信息 */
@@ -92,7 +94,7 @@ bool heating_state_differentiation = false; //  差异化培养区制热系统�
 
 /* 机械臂数据 */
 bool waterpump_state = false; //  滴灌系统状态
-uint16_t water_liquid_level = 20;  //  水箱液位
+uint16_t water_liquid_level = 100;  //  水箱液位
 
 
 
@@ -166,6 +168,9 @@ void IO_init(){
   //digitalWrite(stateLedPin,HIGH);
   pinMode(sh_normalization_Pin, INPUT);
   pinMode(sh_differentiation_Pin, INPUT);
+  pinMode(water_liquid_level_Pin, INPUT_PULLUP);
+
+  
   
   pinMode(fan_normalization_Pin, OUTPUT);
   digitalWrite(fan_normalization_Pin,HIGH);

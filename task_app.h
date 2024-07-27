@@ -19,7 +19,7 @@ extern const int fan_differentiation_Pin; // 差异化培养区通风系统
 extern const int light_differentiation_Pin; // 差异化培养区光照系统
 extern const int refrigeration_differentiation_Pin; // 差异化培养区制冷系统
 extern const int heating_differentiation_Pin; // 差异化培养区制热系统
-
+extern const int water_liquid_level_Pin; // 液位传感器
 
 /* 系统运行数据 */
 extern long rssi;

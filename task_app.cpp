@@ -100,11 +100,12 @@ void Iot_data_upload_app(){
 /* 串口处理程序 */
 void Serial1_analysis_app(){
   air_senor_read();
-  actuator_write();
 }
 
 
 /* 传感器数据采集程序 */
 void Sensor_rw_app(){
   sh_sernor_read(); // 读取土壤湿度
+  water_liquid_level_read(); // 读取液位
+  actuator_write(); // 控制执行器
 }
