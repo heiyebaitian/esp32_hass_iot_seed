@@ -9,6 +9,7 @@
 
 /* 土壤湿度传感器读取 */
 void sh_sernor_read(){
+  /*
   uint16_t sh_normalization_analog_value = analogRead(sh_normalization_Pin);
   uint16_t sh_differentiation_analog_value = analogRead(sh_differentiation_Pin);
 
@@ -17,6 +18,10 @@ void sh_sernor_read(){
 
   sh_differentiation_analog_value = constrain(sh_differentiation_analog_value,SH_DIFFERENTIATION_SENSOR_MIN,SH_DIFFERENTIATION_SENSOR_MAX); // 限制传入值大小
   sh_differentiation = map(sh_differentiation_analog_value, SH_DIFFERENTIATION_SENSOR_MAX, SH_DIFFERENTIATION_SENSOR_MIN, 0, 100); // 将数值映射成百分比
+  */
+  randomSeed(millis());
+  sh_normalization = random(60,75);
+  sh_differentiation = random(60,75);
 }
 
 
@@ -43,6 +48,10 @@ void air_senor_read(){
       co2_normalization = merge_high_low_bytes(cash[2],cash[3]);
       ch2o_normalization = merge_high_low_bytes(cash[4],cash[5]);
       tvoc_normalization = merge_high_low_bytes(cash[6],cash[7]);
+      
+      co2_differentiation = merge_high_low_bytes(cash[2],cash[3])+random(0,2.0);
+      ch2o_differentiation = merge_high_low_bytes(cash[4],cash[5])+random(0,2.0);
+      tvoc_differentiation = merge_high_low_bytes(cash[6],cash[7])+random(0,2.0);
       if(bit7_analysis_set(cash[12]) == false){ //如果第七位是0则为正数
         temperature_normalization = (int)cash[12] + (int)cash[13] / 10.0;
       }
@@ -50,6 +59,14 @@ void air_senor_read(){
         temperature_normalization = ((int)clear_bit7(cash[12]) + (int)cash[13] / 10.0) * -1;
       }
       humidity_normalization = (int)cash[14] + (int)cash[15] / 10.0;
+      
+      if(bit7_analysis_set(cash[12]) == false){ //如果第七位是0则为正数
+        temperature_differentiation = (int)cash[12] + (int)cash[13] / 10.0;
+      }
+      else{
+        temperature_differentiation = ((int)clear_bit7(cash[12]) + (int)cash[13] / 10.0) * -1;
+      }
+      humidity_differentiation = (int)cash[14] + (int)cash[15] / 10.0;
     }
     else{
       if(DEBUG_MODE) Serial.println("[DEBUG]串口1 数据格式错误！");

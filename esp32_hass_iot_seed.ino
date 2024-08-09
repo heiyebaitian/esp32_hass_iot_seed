@@ -43,7 +43,7 @@ const char *wifi_ssid = "iotgateway";
 const char *wifi_password = "12345678";
 
 /* MQTT相关配置信息 */
-const char *mqtt_broker_addr = "192.168.1.101"; // MQTT服务器地址
+const char *mqtt_broker_addr = "192.168.166.101"; // MQTT服务器地址
 const uint16_t mqtt_broker_port = 1883; // MQTT服务器端口            
 const char *mqtt_username = "esp32"; // MQTT账号
 const char *mqtt_password = "12345678"; // MQTT密码
@@ -159,7 +159,7 @@ void Serial_init(){
   if(DEBUG_MODE) Serial.begin(SERIAL_DEBUG_BPS); // DEBUG模式
   else Serial.begin(SERIAL_BPS); //TX:43 RX:44
   Serial1.begin(SERIAL1_BPS); //TX:16 RX:15 气体传感器占用
-  Serial2.begin(SERIAL2_BPS); //TX:20 RX:19
+  Serial2.begin(SERIAL2_BPS); //TX:20 RX:19 RP2040占用
 }
 
 /* IO初始化代码 */
